@@ -18,7 +18,16 @@ public class BaseMonGoDB {
 	}
 	
 	public MongoDatabase getDataBase() {
+		connectDB();
 		return mDatabase;
+	}
+	
+	public void close() {
+		if(mClient != null) {
+			mClient.close();
+			mClient = null;
+			mDatabase = null;
+		}
 	}
 
 	private void connectDB() {

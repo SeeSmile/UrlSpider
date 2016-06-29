@@ -20,31 +20,30 @@ public class StartSpider {
 	public static void main(String[] args) {
 		File file = new File(SFileUtil.getDataFile("name.txt"));
 		final ChinaZSpider spider = new ChinaZSpider("");
-		final UrlDB db = UrlDB.getInstance();
+		
 		SFileUtil.readFileLine(file, new ReadListener() {
-			
+			UrlDB db = UrlDB.getInstance();
 			@Override
 			public void onRead(int index, String text) {
 				System.out.println("index:" + index + ", " + text);
-				if(index >= 971) {
+				//1648
+				if(index >= 8841) {
 					long t_start = System.currentTimeMillis();
 					spider.setKeyWord(text);
-					ChinazEntity entity = spider.getSearchSingle();
+					ChinazEntity entity = spider.getSearchSingle(); 
 					if(entity != null) {
-						System.out.print(entity.getTitle() + ", " + entity.getHref());
+						System.out.println(entity.getTitle() + ", " + entity.getHref());
 						db.addInfo(entity);
 					} 
 					try {
-						Thread.sleep((new Random().nextInt(10) + 1) * 300);
+						Thread.sleep((new Random().nextInt(10) + 1) * 500);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} finally {
 						long t_end = System.currentTimeMillis();
 						System.out.println("time:" + (t_end - t_start) / 1000 + "." +
 								(t_end - t_start) % 1000 / 10 + "s");
 					}
-					
 				}
 				count++;
 			}

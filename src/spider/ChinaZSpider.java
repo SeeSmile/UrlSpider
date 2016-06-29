@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -55,35 +56,45 @@ public class ChinaZSpider {
 	public void setKeyWord(String key) {
 		this.keyword = key;
 	}
+	
 	/**
-	 * 获取列表
+	 * 获取搜索列表
 	 * @return
 	 */
-	public List<ChinazEntity> getSearchList() {
+	public List<ChinazEntity> getSearchList(String url) {
+		System.out.println("url : " + url);
 		List<ChinazEntity> list = new ArrayList<ChinazEntity>();
-		String url = URL_SEARCH;
-		try {
-			Document doc = Jsoup.connect(url).get();
-			Element ele = doc.getElementById(ID_LIST);
-			if(ele == null) {
-				return null;
-			}
-			Elements eles = ele.select("li." + CLASS_LIST_NORMAL);
-			getEntityList(list, eles);
-			return list;
-		} catch (IOException e) {
-			System.out.println("io exception");
-		}
-		return null;
-	}
-	
-	public ChinazEntity getSearchSingle(){
-		String url = URL_SEARCH;
 		Document doc;
 		try {
 			doc = Jsoup.connect(url)
 					.timeout(10 * 1000)
-					.userAgent("Chrome")
+					.get();
+			Element ele = doc.getElementsByClass("listCentent").get(0);
+			if(ele == null) {
+				return null;
+			}
+			Elements eles = ele.select("li." + CLASS_LIST_NORMAL);
+			if(eles == null || eles.size() == 0) {
+				return null;
+			}
+			getEntityList(list, eles);
+			return list;
+		} catch (IOException e) {
+			System.out.println("io ex");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 获取搜索的第一条数据信息
+	 * @return
+	 */
+	public ChinazEntity getSearchSingle(){
+		Document doc;
+		try {
+			doc = Jsoup.connect(URL_SEARCH)
+					.timeout(10 * 1000)
 					.data("url", keyword)
 					.get();
 			Element ele = doc.getElementById(ID_LIST);
@@ -101,19 +112,41 @@ public class ChinaZSpider {
 		return null;
 	}
 	
-	private void getEntityList(List<ChinazEntity> list, Elements eles) throws IOException {
+	/**
+	 * 获取列表的每个item信息
+	 * @param list
+	 * @param eles
+	 * @throws IOException
+	 */
+	private void getEntityList(List<ChinazEntity> list, Elements eles) {
 		for(Element ele : eles) {
-			list.add(getEntity(ele));
+			try {
+				list.add(getEntity(ele));
+			} catch (IOException e1) {
+				continue;
+			}
+			try {
+				Thread.sleep((new Random().nextInt(10) + 1) * 500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	/**
+	 * 获取带个item在list页面的信息
+	 * @param ele
+	 * @return
+	 * @throws IOException
+	 */
 	private ChinazEntity getEntity(Element ele) throws IOException {
 		ChinazEntity entity = new ChinazEntity();
 		String left_img = ele.getElementsByClass(CLASS_LEFT_IMG).select("img").attr("src");
 		Element ele_top = ele.getElementsByClass(CLASS_TEXT_TOP).select("a").get(0);
 		String title = ele_top.attr("title");
+		System.out.println("获取 " + title + "中。。。");
 		String href = ele_top.attr("href");
-		String url = ele_top.select("span").text();
+		String url = ele.getElementsByClass(CLASS_TEXT_TOP).select("span.col-gray").text();
 		Element ele_data = ele.getElementsByClass(CLASS_TEXT_SECOND).get(0);
 		Elements eles_count = ele_data.select("p." + CLASS_TEXT_DATA);
 		String introduce = ele.select("p." + CLASS_TEXT_INTRODUCE).text();
@@ -139,6 +172,9 @@ public class ChinaZSpider {
 		}
 		entity.setImage(left_img);
 		entity.setTitle(title);
+		if(href.startsWith("/")) {
+			href = "http://top.chinaz.com" + href;
+		}
 		entity.setHref(href);
 		entity.setUrl(url);
 		entity.setCount_alexa(count_alexa);
@@ -150,8 +186,15 @@ public class ChinaZSpider {
 		return entity;
 	}
 	
+	/**
+	 * 获取详细页面的信息
+	 * @param entity
+	 * @throws IOException
+	 */
 	private void getDetailInfo(ChinazEntity entity) throws IOException {
-		Document doc = Jsoup.connect(entity.getHref()).get();
+		Document doc = Jsoup.connect(entity.getHref())
+				.timeout(10 * 1000)
+				.get();
 		Elements eles_rank = doc.getElementsByClass(CLASS_RANK).select("li");
 		String ranking_all = "", ranking_area = "", ranking_net = "";
 		for(int i = 0; i < eles_rank.size(); i++) {
@@ -182,12 +225,22 @@ public class ChinaZSpider {
 		entity.setArea(area);
 	}
 	
+	/**
+	 * 获取排名
+	 * @param text
+	 * @return
+	 */
 	private String getCount(String text) {
 		int p_end = text.lastIndexOf("/");
 		int p_end2 = text.lastIndexOf(".");
 		return text.substring(p_end + 1, p_end2); 
 	}
 	
+	/**
+	 * 获取star指数
+	 * @param text
+	 * @return
+	 */
 	private String getStar(String text) {
 		try {
 			int p_end = text.lastIndexOf("_");
@@ -198,6 +251,11 @@ public class ChinaZSpider {
 		} 
 	}
 	
+	/**
+	 * 获取pr指数
+	 * @param text
+	 * @return
+	 */
 	private String formatCountPr(String text) {
 		int p = text.indexOf("_");
 		if(p != -1) {

@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,7 +27,7 @@ import org.apache.http.impl.client.HttpClients;
 public class SwebUtil {
 	
 	
-	public static String doPortGet(String surl) throws IOException, URISyntaxException {
+	public static String doGet(String surl) throws IOException, URISyntaxException {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD_STRICT).build();
 		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 		
@@ -71,6 +74,18 @@ public class SwebUtil {
 	    return xmlUTF8;  
 	    }  
 	
-
+	public static String doPortGet(String net) throws IOException {
+		 URL url = new URL(net);
+		 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("113.121.77.167", 8888)); // or whatever your proxy is
+		 HttpURLConnection uc = (HttpURLConnection)url.openConnection(proxy);
+		 uc.connect();
+		 String line = null;
+		 StringBuffer tmp = new StringBuffer();
+		 BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+		 while ((line = in.readLine()) != null) {
+		  tmp.append(line);
+		 }
+		 return tmp.toString();
+	}
 
 }
