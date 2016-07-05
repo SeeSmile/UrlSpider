@@ -3,42 +3,26 @@ package utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 public class SwebUtil {
 	
-	
 	public static String doGet(String surl) throws IOException, URISyntaxException {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD_STRICT).build();
 		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
-		
-	     HttpGet httpGet = null;
-	   
+	    HttpGet httpGet = null;
 		try {
 			httpGet = new HttpGet(surl);
 		} catch (Exception e) {
 			throw new URISyntaxException("", "");
 		}  
-         httpGet.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+        httpGet.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
         CloseableHttpResponse httpResponse = null;
 		httpResponse = httpClient.execute(httpGet);
         BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -50,42 +34,7 @@ public class SwebUtil {
         }
         reader.close();
         httpClient.close();
-
         return result.toString();
 	}
 	
-	
-		 
-	public static String getUTF8XMLString(String xml) {  
-	    // A StringBuffer Object  
-	    StringBuffer sb = new StringBuffer();  
-	    sb.append(xml);  
-	    String xmString = "";  
-	    String xmlUTF8="";  
-	    try {  
-	    xmString = new String(sb.toString().getBytes("UTF-8"));  
-	    xmlUTF8 = URLEncoder.encode(xmString, "UTF-8");  
-	    System.out.println("utf-8 编码：" + xmlUTF8) ;  
-	    } catch (UnsupportedEncodingException e) {  
-	    // TODO Auto-generated catch block  
-	    e.printStackTrace();  
-	    }  
-	    // return to String Formed  
-	    return xmlUTF8;  
-	    }  
-	
-	public static String doPortGet(String net) throws IOException {
-		 URL url = new URL(net);
-		 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("113.121.77.167", 8888)); // or whatever your proxy is
-		 HttpURLConnection uc = (HttpURLConnection)url.openConnection(proxy);
-		 uc.connect();
-		 String line = null;
-		 StringBuffer tmp = new StringBuffer();
-		 BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-		 while ((line = in.readLine()) != null) {
-		  tmp.append(line);
-		 }
-		 return tmp.toString();
-	}
-
 }

@@ -2,34 +2,27 @@ package db;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bson.BasicBSONObject;
-import org.bson.BsonDocument;
 import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.conversions.Bson;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCursor;
-
 import entitys.ChinazEntity;
 
-public class UrlDB extends BaseMonGoDB {
+public class ChinazDB extends BaseMonGoDB {
 	
 	/**
 	 * collection的名字
 	 */
 	private static final String CL_NAME = "wlf_website_info";
 	private static final String CL_CHINAZ = "wlf_chinaz_info";
-	private static UrlDB mDB;
+	private static ChinazDB mDB;
 	
-	private UrlDB() {
+	private ChinazDB() {
 		super();
 	}
 	
-	public static UrlDB getInstance() {
+	public static ChinazDB getInstance() {
 		if(mDB == null) {
-			mDB = new UrlDB();
+			mDB = new ChinazDB();
 		}
 		return mDB;
 	}

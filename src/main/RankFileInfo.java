@@ -1,33 +1,28 @@
 package main;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.Random;
-
-import db.UrlDB;
-
+import db.ChinazDB;
 import entitys.ChinazEntity;
-
 import spider.ChinaZSpider;
 import utils.SFileUtil;
 import utils.SFileUtil.ReadListener;
 
-public class StartSpider {
+public class RankFileInfo {
 	
 	private static int count = 0;
+	private static int START_LINE = 1;
 	
 	public static void main(String[] args) {
+		//从data目录读取name.txt文件，必须要先有这个文件
 		File file = new File(SFileUtil.getDataFile("name.txt"));
-		final ChinaZSpider spider = new ChinaZSpider("");
-		
 		SFileUtil.readFileLine(file, new ReadListener() {
-			UrlDB db = UrlDB.getInstance();
+			ChinazDB db = ChinazDB.getInstance();
+			ChinaZSpider spider = new ChinaZSpider("");
 			@Override
 			public void onRead(int index, String text) {
 				System.out.println("index:" + index + ", " + text);
-				//1648
-				if(index >= 8841) {
+				if(index >= START_LINE) {
 					long t_start = System.currentTimeMillis();
 					spider.setKeyWord(text);
 					ChinazEntity entity = spider.getSearchSingle(); 
@@ -55,7 +50,7 @@ public class StartSpider {
 			
 			@Override
 			public void onFail() {
-				
+				System.out.println("读取文件失败");
 			}
 		});
 	}

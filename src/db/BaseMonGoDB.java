@@ -3,7 +3,7 @@ package db;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
-public class BaseMonGoDB {
+class BaseMonGoDB {
 	
 	private static String DB_ADDRESS = "203.195.238.137";
 	private static int DB_PORT = 27017;
@@ -17,12 +17,12 @@ public class BaseMonGoDB {
 		connectDB();
 	}
 	
-	public MongoDatabase getDataBase() {
+	final protected MongoDatabase getDataBase() {
 		connectDB();
 		return mDatabase;
 	}
 	
-	public void close() {
+	final public void close() {
 		if(mClient != null) {
 			mClient.close();
 			mClient = null;
@@ -30,18 +30,18 @@ public class BaseMonGoDB {
 		}
 	}
 
-	private void connectDB() {
+	final private void connectDB() {
 		initClient();
 		connectDB(DB_NAME);
 	}
 	
-	private void initClient() {
+	final private void initClient() {
 		if(mClient == null) {
 			mClient = new MongoClient(DB_ADDRESS, DB_PORT);
 		}
 	}
 	
-	private void connectDB(String name) {
+	final private void connectDB(String name) {
 		if(mDatabase == null) {
 			mDatabase = mClient.getDatabase(name);
 		} else {

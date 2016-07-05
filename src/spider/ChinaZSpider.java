@@ -1,25 +1,21 @@
 package spider;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import utils.SwebUtil;
-
 import entitys.ChinazEntity;
 
-public class ChinaZSpider {
+/**
+ * 抓取ChinaZ 数据
+ * @author FuPei
+ *
+ */
+public class ChinaZSpider extends BaseSpider {
 	
 	private static final String URL_SEARCH = "http://search.top.chinaz.com/Search.aspx";
 	
@@ -44,12 +40,11 @@ public class ChinaZSpider {
 	private static final String CLASS_RANK = "TopMain-left";
 	private static final String CLASS_STAR = "pstar";
 	private static final String CLASS_INFO = "TopMainTag-show";
-	
 	private static final String ID_LIST = "ltArealist";
-	
 	private String keyword;
 	
 	public ChinaZSpider(String keyword) {
+		super(BaseSpider.Type.CHINAZ);
 		this.keyword = keyword;
 	}
 
@@ -58,7 +53,7 @@ public class ChinaZSpider {
 	}
 	
 	/**
-	 * 获取搜索列表
+	 * 解析排行榜界面列表
 	 * @return
 	 */
 	public List<ChinazEntity> getSearchList(String url) {
@@ -80,8 +75,7 @@ public class ChinaZSpider {
 			getEntityList(list, eles);
 			return list;
 		} catch (IOException e) {
-			System.out.println("io ex");
-			e.printStackTrace();
+			System.out.println("网络连接失败或超时！");
 		}
 		return null;
 	}
