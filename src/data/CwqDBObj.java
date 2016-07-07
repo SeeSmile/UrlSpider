@@ -3,6 +3,7 @@ package data;
 public class CwqDBObj {
 	//表
 	public static final String TABLE_WEIXIN = "wlf_weixin_media";
+	
 	//基本信息
 	public static final String KEY_ACCOUNT = "weixin_account";
 	public static final String KEY_NAME = "weixin_text";

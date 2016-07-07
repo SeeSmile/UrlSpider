@@ -18,8 +18,17 @@ public class SpiderWxDB extends BaseSqlDB {
 	private final static String name = "media";
 	private final static String password = "mediamedia";
 	
-	public SpiderWxDB() {
+	private static SpiderWxDB mDb;
+	
+	private SpiderWxDB() {
 		super(ip, dbname, name, password);
+	}
+	
+	public static SpiderWxDB getInstance() {
+		if(mDb == null) {
+			mDb = new SpiderWxDB();
+		}
+		return mDb;
 	}
 	
 	/**
@@ -161,7 +170,7 @@ public class SpiderWxDB extends BaseSqlDB {
 			list.add(new DbParams(CwqDBObj.KEY_PROVINCE, type_area));
 		}
 		//判断存入数据的类型
-		list.add(new DbParams(CwqDBObj.KEY_CATEGORY, type_type));
+		list.add(new DbParams(CwqDBObj.KEY_CATEGORY, Constant.LIST_TYPE_ID[Integer.valueOf(type_type) - 1]));
 		list.add(new DbParams(CwqDBObj.KEY_TIME, System.currentTimeMillis() / 1000 + ""));
 		list.add(new DbParams(CwqDBObj.KEY_WEEK_READ, entity.getBs_weekly_read_avg()));
 		list.add(new DbParams(CwqDBObj.KEY_QR_CODE, entity.getBs_qr_code()));
@@ -199,20 +208,7 @@ public class SpiderWxDB extends BaseSqlDB {
 		close();
 	}
 	
-	/**
-	 * 根据价格规则得到调整后的价格值
-	 * @param price 原始价格
-	 * @return 最终存入数据库的价格
-	 */
-	private String getRealPrice(String price) {
-		float real_price = Float.valueOf(price);
-		if(real_price <= 300) {
-			real_price = (float) (real_price * 1.5);
-		} else {
-			real_price = (float) (real_price * 1.35);
-		}
-		return real_price + "";
-	}
+	
 	
 	/**
 	 * 获取指定微信账号的id

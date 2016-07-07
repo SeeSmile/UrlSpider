@@ -7,9 +7,14 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import sun.security.jca.GetInstance;
 import utils.WebUtil;
 import com.google.gson.Gson;
+
+import db.SpiderWbDB;
 import db.SpiderWxDB;
+import entitys.CwqWBEntity;
 import entitys.CwqWXEntity;
 
 public class CwqSpider extends BaseSpider {
@@ -20,9 +25,19 @@ public class CwqSpider extends BaseSpider {
 	private final String URL_LOGIN = "http://www.cwq.com/Owner/Account/check_login/";
 	
 	/**
-	 * 获取列表
+	 * 获取微信列表
 	 */
 	private final String URL_WEIXIN = "http://www.cwq.com/Owner/Weixin/get_weixin_list/";
+	
+	/**
+	 * 获取微播列表
+	 */
+	private final String URL_WEIBO = "http://www.cwq.com/Owner/Weibo/get_grassroots_list/";
+	
+	/**
+	 * 获取详细信息
+	 */
+	private final String URL_WEIBO_DETAIL = "http://www.cwq.com/Owner/Weibo/getAccountInfo/";
 	
 	/**
 	 * 获取区域
@@ -36,11 +51,9 @@ public class CwqSpider extends BaseSpider {
 	private String type_id;
 	private String area;
 	private String type_push;
-	private static SpiderWxDB newdb;
 	
 	public CwqSpider() {
 		super(BaseSpider.Type.CWQ);
-		newdb = new SpiderWxDB();
 	}
 	
 	public String getArea() {
@@ -100,12 +113,50 @@ public class CwqSpider extends BaseSpider {
 			public void OnFinish(JSONObject json) {
 				CwqWXEntity wx = new Gson().fromJson(json.toString(), CwqWXEntity.class);
 				try {
-					newdb.insertInfo(wx, type_push, area, type_id);
+					SpiderWxDB.getInstance().insertInfo(wx, type_push, area, type_id);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			}
 		});
+	}
+	
+	public void getWbData() {
+		String type_area = getAreaByUrl();
+		startGetList(getWBParam(type_id, type_area), URL_WEIBO, new GetListener() {
+		
+		@Override
+		public void OnFinish(JSONObject json) {
+			String id = json.optString("bs_id");
+			CwqWBEntity entity = getDetailWB(id);
+			System.out.println(entity.toString());
+			try {
+				SpiderWbDB.getInstance().insertInfo(entity, area, type_id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		});
+	}
+	
+	public CwqWBEntity getDetailWB(String id) {
+		List<NameValuePair> param = new ArrayList<>();
+		param.add(new BasicNameValuePair("account_id", id));
+		param.add(new BasicNameValuePair("is_type", "0"));
+		param.add(new BasicNameValuePair("pt_type", "1"));
+		CwqWBEntity entity = new CwqWBEntity();
+		try {
+			String result = WebUtil.sendPOST(URL_WEIBO_DETAIL, param);
+			JSONObject json = new JSONObject(result);
+			if(json.getInt("status") == 0) {
+				json = json.getJSONObject("data");
+				entity = new Gson().fromJson(json.toString(), CwqWBEntity.class);
+			}
+			return entity;
+		} catch (Exception e) {
+			
+		}
+		return null;
 	}
 	
 	/**
@@ -124,6 +175,19 @@ public class CwqSpider extends BaseSpider {
 		params.add(new BasicNameValuePair("cjfl", type_id));
 		params.add(new BasicNameValuePair("is_celebrity", "0"));
 		params.add(new BasicNameValuePair("zfjg_type", "2"));
+		System.out.println("params:\n" + params.toString());
+		return params;
+	}
+	
+	private List<NameValuePair> getWBParam(String type_id, String type_area) {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		//地区id
+		params.add(new BasicNameValuePair("dfmr_mt", type_area));
+		//类型过滤
+		params.add(new BasicNameValuePair("cjfl", type_id));
+		params.add(new BasicNameValuePair("py_type", "1"));
+		params.add(new BasicNameValuePair("is_celebrity", "0"));
+		params.add(new BasicNameValuePair("zfjg_type", "1"));
 		System.out.println("params:\n" + params.toString());
 		return params;
 	}

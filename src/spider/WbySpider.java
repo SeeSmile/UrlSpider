@@ -126,7 +126,7 @@ public class WbySpider extends BaseSpider{
 	 * @throws JSONException 
 	 */
 	public static void startGetWX() throws JSONException {
-		SpiderWxDB db = new SpiderWxDB();
+		SpiderWxDB db = SpiderWxDB.getInstance();
 		for(int category = 3005; category <= 3023; category++) {
 			System.out.println("获取第" + category + "种类数据");
 			boolean isComplete = false;

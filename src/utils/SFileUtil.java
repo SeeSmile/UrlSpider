@@ -54,6 +54,19 @@ public class SFileUtil {
 			}
 			listener.onFinish();
 	}
+	public static String readFile(File file) throws IOException {
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		fis = new FileInputStream(file);
+		isr = new InputStreamReader(fis, "UTF-8");  
+		BufferedReader br = new BufferedReader(isr);   
+		StringBuffer buffer = new StringBuffer();
+		String line;
+		while((line = br.readLine()) != null) {
+			buffer.append(line);
+		}
+		return buffer.toString();
+	}
 	
 	public interface ReadListener {
 		public void onRead(int index, String text);

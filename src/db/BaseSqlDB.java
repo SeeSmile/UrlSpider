@@ -118,12 +118,27 @@ public class BaseSqlDB {
 	
 	public DbParams getTime() {
 		
-//		DbParams p = new DbParams(KEY_TIME, System.currentTimeMillis() / 1000 + "");
-		DbParams p = new DbParams(KEY_TIME, getTime2());
+		DbParams p = new DbParams(KEY_TIME, System.currentTimeMillis() / 1000 + "");
+//		DbParams p = new DbParams(KEY_TIME, getTime2());
 		return p;
 	}
 	
 	public String getTime2() {
 		return "1460304000";
+	}
+	
+	/**
+	 * 根据价格规则得到调整后的价格值
+	 * @param price 原始价格
+	 * @return 最终存入数据库的价格
+	 */
+	public String getRealPrice(String price) {
+		float real_price = Float.valueOf(price);
+		if(real_price <= 300) {
+			real_price = (float) (real_price * 1.5);
+		} else {
+			real_price = (float) (real_price * 1.35);
+		}
+		return real_price + "";
 	}
 }

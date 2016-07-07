@@ -41,7 +41,7 @@ public class WebUtil {
         return response.toString();
     }
  
-    public static String sendPOST(String url, List<NameValuePair> param) throws Exception {
+    public static synchronized String sendPOST(String url, List<NameValuePair> param) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         httpPost.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
         if(param != null) {

@@ -1,10 +1,10 @@
-package data;
+package entitys;
 
 import com.google.gson.Gson;
 
 public class CwqWBEntity {
 	/**
-	 * 类型
+	 * 锟斤拷锟斤拷
 	 */
 	private String pg_cjfl_explain;
 	private String bs_account_name;
@@ -12,16 +12,27 @@ public class CwqWBEntity {
 	private String bs_weibo_url;
 	private String pg_area_name;
 	private String bs_head_img;
-	/**
-	 * 认证类型
-	 */
 	private String verified_explain;
-//	private String sy_fans_num;
+	private String sy_fans_num;
 	private String bs_rg_zhuanfa;
 	private String bs_rg_zhifa;
+	private String bs_yg_zhifa;
+	private String bs_yg_zhuanfa;
 	private String bs_create_time;
 	private String bs_update_time;
 	
+	public String getBs_yg_zhifa() {
+		return bs_yg_zhifa;
+	}
+	public void setBs_yg_zhifa(String bs_yg_zhifa) {
+		this.bs_yg_zhifa = bs_yg_zhifa;
+	}
+	public String getBs_yg_zhuanfa() {
+		return bs_yg_zhuanfa;
+	}
+	public void setBs_yg_zhuanfa(String bs_yg_zhuanfa) {
+		this.bs_yg_zhuanfa = bs_yg_zhuanfa;
+	}
 	public String getPg_cjfl_explain() {
 		return pg_cjfl_explain;
 	}
@@ -88,6 +99,13 @@ public class CwqWBEntity {
 	}
 	public void setBs_update_time(String bs_update_time) {
 		this.bs_update_time = bs_update_time;
+	}
+	
+	public String getSy_fans_num() {
+		return sy_fans_num;
+	}
+	public void setSy_fans_num(String sy_fans_num) {
+		this.sy_fans_num = sy_fans_num;
 	}
 	
 	@Override
