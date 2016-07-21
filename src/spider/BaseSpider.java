@@ -3,7 +3,7 @@ package spider;
 public class BaseSpider {
 	
 	public static enum Type{
-		CHINAZ, CWQ, WBY
+		CHINAZ, CWQ, WBY, NEWRANK, WEIXIN, APPWEIXIN
 	}
 	
 	private Type mType;

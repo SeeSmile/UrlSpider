@@ -44,9 +44,45 @@ public class SpiderWxDB extends BaseSqlDB {
 		if(id == null) {
 			insertBaseInfo(entity, type_push, type_area, type_type);
 		} else {
-			System.out.println("存在账号:" + id);
+			System.out.println("已存在账号");
 		}
 	}
+	
+//	private void updateInfo(CwqWXEntity entity, String type_push) throws SQLException {
+//		String sql_one = "update " + CwqDBObj.TABLE_WEIXIN + " set " + CwqDBObj.KEY_D_TOP + "=?," + 
+//				CwqDBObj.KEY_DR_TOP + "=?," + CwqDBObj.KEY_D_ONE + "=?," +	CwqDBObj.KEY_DR_ONE + "=?," + 
+//				CwqDBObj.KEY_D_TWO + "=?, " + CwqDBObj.KEY_DR_TWO + "=?," + CwqDBObj.KEY_D_THREE + "=?," +
+//				CwqDBObj.KEY_DR_THREE + "=?," +"where account=?";
+//		
+//		String sql_two = "update " + CwqDBObj.TABLE_WEIXIN + " set " + CwqDBObj.KEY_ONE + "=?," + 
+//				CwqDBObj.KEY_R_ONE + "=?," + CwqDBObj.KEY_TOP + "=?," +	CwqDBObj.KEY_R_TOP + "=?," + 
+//				CwqDBObj.KEY_TWO + "=?, " + CwqDBObj.KEY_R_TWO + "=?," + CwqDBObj.KEY_THREE + "=?," +
+//				CwqDBObj.KEY_R_THREE + "=?," +"where account=?";
+//		String sql;
+//		if(type_push.equals("1")) {
+//			sql = sql_one;
+//		} else {
+//			sql = sql_two;
+//		}
+//		PreparedStatement pst = getPrepared(sql);
+//		/**
+//		 * entity.getDtwdyt()));
+//			list.add(new DbParams(CwqDBObj.KEY_D_ONE, entity.getDtwdet()));
+//			list.add(new DbParams(CwqDBObj.KEY_D_TWO, entity.getDtwqtwz()));
+//			list.add(new DbParams(CwqDBObj.KEY_D_THREE, entity.getDtwqtwz())
+//		 * 
+//		 */
+//		pst.setString(1, entity.getDtwdyt());
+//		pst.setString(1, getRealPrice(entity.getDtwdyt()));
+//		pst.setString(1, entity.getDtwdet());
+//		pst.setString(1, getRealPrice(entity.getDtwdet()));
+//		pst.setString(1, entity.getDtwqtwz());
+//		pst.setString(1, getRealPrice(entity.getDtwqtwz()));
+//		pst.setString(1, entity.getDtwqtwz());
+//		pst.setString(1, getRealPrice(entity.getDtwqtwz()));
+//		pst.executeUpdate();
+//		
+//	}
 	
 	public void insertInfo(WbyWXEntity entity, String type_type) {
 		ArrayList<DbParams> list = new ArrayList<>();
@@ -67,7 +103,6 @@ public class SpiderWxDB extends BaseSqlDB {
 		}
 		if(entity.getReference_price().getMulti_top() != null) {
 			list.add(new DbParams(CwqDBObj.KEY_ONE, entity.getReference_price().getMulti_top().getQuote()));
-			
 			list.add(new DbParams(CwqDBObj.KEY_R_ONE, getRealPrice(entity.getReference_price().getMulti_top().getQuote() + "")));
 		}
 		if(entity.getReference_price().getMulti_second() != null) {
@@ -116,7 +151,6 @@ public class SpiderWxDB extends BaseSqlDB {
 		if(entity.getGross_deal_price().getMulti_graphic_second_price() != null) {
 			list.add(new DbParams(CwqDBObj.KEY_TWO, entity.getGross_deal_price().getMulti_graphic_second_price()));
 			list.add(new DbParams(CwqDBObj.KEY_R_TWO, getRealPrice(entity.getGross_deal_price().getMulti_graphic_second_price())));
-			
 		}
 		
 		String sql = createInsertSql(CwqDBObj.TABLE_WEIXIN, list);
@@ -170,37 +204,37 @@ public class SpiderWxDB extends BaseSqlDB {
 			list.add(new DbParams(CwqDBObj.KEY_PROVINCE, type_area));
 		}
 		//判断存入数据的类型
-		list.add(new DbParams(CwqDBObj.KEY_CATEGORY, Constant.LIST_TYPE_ID[Integer.valueOf(type_type) - 1]));
+		list.add(new DbParams(CwqDBObj.KEY_CATEGORY, Constant.LIST_TYPE_ID_WX_CWQ[Integer.valueOf(type_type) - 1]));
 		list.add(new DbParams(CwqDBObj.KEY_TIME, System.currentTimeMillis() / 1000 + ""));
 		list.add(new DbParams(CwqDBObj.KEY_WEEK_READ, entity.getBs_weekly_read_avg()));
 		list.add(new DbParams(CwqDBObj.KEY_QR_CODE, entity.getBs_qr_code()));
-		
-		if(type_push.equals("1")) {
+//		
+//		if(type_push.equals("1")) {
 			list.add(new DbParams(CwqDBObj.KEY_D_TOP, entity.getDtwdyt()));
 			list.add(new DbParams(CwqDBObj.KEY_D_ONE, entity.getDtwdet()));
-			list.add(new DbParams(CwqDBObj.KEY_D_TWO, entity.getDtwqtwz()));
-			list.add(new DbParams(CwqDBObj.KEY_D_THREE, entity.getDtwqtwz()));
+			list.add(new DbParams(CwqDBObj.KEY_TOP, entity.getSolt_price2()));
+			list.add(new DbParams(CwqDBObj.KEY_ONE, entity.getSolt_price3()));
 			
 			list.add(new DbParams(CwqDBObj.KEY_DR_TOP, getRealPrice(entity.getDtwdyt())));
 			list.add(new DbParams(CwqDBObj.KEY_DR_ONE, getRealPrice(entity.getDtwdet())));
-			list.add(new DbParams(CwqDBObj.KEY_DR_TWO, getRealPrice(entity.getDtwqtwz())));
-			list.add(new DbParams(CwqDBObj.KEY_DR_THREE, getRealPrice(entity.getDtwqtwz())));
-		} else {
-			list.add(new DbParams(CwqDBObj.KEY_TOP, getRealPrice(entity.getDtwdyt())));
-			list.add(new DbParams(CwqDBObj.KEY_ONE, getRealPrice(entity.getDtwdet())));
-			list.add(new DbParams(CwqDBObj.KEY_TWO, getRealPrice(entity.getDtwqtwz())));
-			list.add(new DbParams(CwqDBObj.KEY_THREE, getRealPrice(entity.getDtwqtwz())));
-			
+			list.add(new DbParams(CwqDBObj.KEY_R_TOP, getRealPrice(entity.getSolt_price2())));
+			list.add(new DbParams(CwqDBObj.KEY_R_ONE, getRealPrice(entity.getSolt_price3())));
+//		} else {
+//			list.add(new DbParams(CwqDBObj.KEY_TOP, getRealPrice(entity.getDtwdyt())));
+//			list.add(new DbParams(CwqDBObj.KEY_ONE, getRealPrice(entity.getDtwdet())));
+//			list.add(new DbParams(CwqDBObj.KEY_TWO, getRealPrice(entity.getDtwqtwz())));
+//			list.add(new DbParams(CwqDBObj.KEY_THREE, getRealPrice(entity.getDtwqtwz())));
+//			
 //			list.add(new DbParams(CwqDBObj.KEY_TOP, entity.getDtwdyt()));
 //			list.add(new DbParams(CwqDBObj.KEY_ONE, entity.getDtwdet()));
 //			list.add(new DbParams(CwqDBObj.KEY_TWO, entity.getDtwqtwz()));
 //			list.add(new DbParams(CwqDBObj.KEY_THREE, entity.getDtwqtwz()));
-			
-			list.add(new DbParams(CwqDBObj.KEY_R_TOP, getRealPrice(entity.getDtwdyt())));
-			list.add(new DbParams(CwqDBObj.KEY_R_ONE, getRealPrice(entity.getDtwdet())));
-			list.add(new DbParams(CwqDBObj.KEY_R_TWO, getRealPrice(entity.getDtwqtwz())));
-			list.add(new DbParams(CwqDBObj.KEY_R_THREE, getRealPrice(entity.getDtwqtwz())));
-		}
+//			
+//			list.add(new DbParams(CwqDBObj.KEY_R_TOP, getRealPrice(entity.getDtwdyt())));
+//			list.add(new DbParams(CwqDBObj.KEY_R_ONE, getRealPrice(entity.getDtwdet())));
+//			list.add(new DbParams(CwqDBObj.KEY_R_TWO, getRealPrice(entity.getDtwqtwz())));
+//			list.add(new DbParams(CwqDBObj.KEY_R_THREE, getRealPrice(entity.getDtwqtwz())));
+//		}
 		String sql = createInsertSql(CwqDBObj.TABLE_WEIXIN, list);
 		PreparedStatement pst = getPrepared(sql);
 		initPst(pst, list);

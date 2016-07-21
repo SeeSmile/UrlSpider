@@ -34,6 +34,8 @@ public class CwqSpider extends BaseSpider {
 	 */
 	private final String URL_WEIBO = "http://www.cwq.com/Owner/Weibo/get_grassroots_list/";
 	
+	private final String URL_WEIBO_FAMOUS = "http://www.cwq.com/Owner/Weibo/get_celeprity_list/";
+	
 	/**
 	 * 获取详细信息
 	 */
@@ -107,11 +109,14 @@ public class CwqSpider extends BaseSpider {
 	
 	public void getWxData() {
 		String type_area = getAreaByUrl();
+//		String type_area = "322";
 		startGetList(getWXParam(type_id, type_area, type_push), URL_WEIXIN, new GetListener() {
 			
 			@Override
 			public void OnFinish(JSONObject json) {
 				CwqWXEntity wx = new Gson().fromJson(json.toString(), CwqWXEntity.class);
+				wx.setSolt_price2(json.optString("soft_price2"));
+				wx.setSolt_price3(json.optString("soft_price3"));
 				try {
 					SpiderWxDB.getInstance().insertInfo(wx, type_push, area, type_id);
 				} catch (SQLException e) {
@@ -123,21 +128,54 @@ public class CwqSpider extends BaseSpider {
 	
 	public void getWbData() {
 		String type_area = getAreaByUrl();
+//		String type_area = "322";
 		startGetList(getWBParam(type_id, type_area), URL_WEIBO, new GetListener() {
 		
-		@Override
-		public void OnFinish(JSONObject json) {
-			String id = json.optString("bs_id");
-			CwqWBEntity entity = getDetailWB(id);
-			System.out.println(entity.toString());
-			try {
-				SpiderWbDB.getInstance().insertInfo(entity, area, type_id);
-			} catch (SQLException e) {
-				e.printStackTrace();
+			@Override
+			public void OnFinish(JSONObject json) {
+				System.out.println("json:" + json);
+				String id = json.optString("bs_id");
+				CwqWBEntity entity = getDetailWB(id);
+				System.out.println(entity.toString());
+				try {
+					SpiderWbDB.getInstance().insertInfo(entity, area, type_id);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
-		}
 		});
 	}
+	
+	public void getWbDataFamous() {
+//		String type_area = getAreaByUrl();
+//		String type_area = "322";
+		startGetList(getWBParamFamous(), URL_WEIBO_FAMOUS, new GetListener() {
+		
+			@Override
+			public void OnFinish(JSONObject json) {
+				System.out.println("json:" + json.optString("bs_account_name"));
+				String name = json.optString("bs_account_name");
+				try {
+					if(SpiderWbDB.getInstance().isExistAccount(name)) {
+						String id = json.optString("bs_id");
+						CwqWBEntity entity = getDetailWB(id);
+						System.out.println(entity.toString());
+						try {
+							SpiderWbDB.getInstance().insertInfo2(entity, area, type_id);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					} else {
+						SpiderWbDB.getInstance().updateType(name);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		});
+	}
+	
 	
 	public CwqWBEntity getDetailWB(String id) {
 		List<NameValuePair> param = new ArrayList<>();
@@ -168,12 +206,12 @@ public class CwqSpider extends BaseSpider {
 	private List<NameValuePair> getWXParam(String type_id, String type_area, String type_push) {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		//硬广1，软广2
-		params.add(new BasicNameValuePair("flex", type_push));
+//		params.add(new BasicNameValuePair("flex", type_push));
 		//地区id
 		params.add(new BasicNameValuePair("dfmr_mt", type_area));
 		//类型过滤
 		params.add(new BasicNameValuePair("cjfl", type_id));
-		params.add(new BasicNameValuePair("is_celebrity", "0"));
+//		params.add(new BasicNameValuePair("is_celebrity", "0"));
 		params.add(new BasicNameValuePair("zfjg_type", "2"));
 		System.out.println("params:\n" + params.toString());
 		return params;
@@ -188,6 +226,14 @@ public class CwqSpider extends BaseSpider {
 		params.add(new BasicNameValuePair("py_type", "1"));
 		params.add(new BasicNameValuePair("is_celebrity", "0"));
 		params.add(new BasicNameValuePair("zfjg_type", "1"));
+		System.out.println("params:\n" + params.toString());
+		return params;
+	}
+	
+	private List<NameValuePair> getWBParamFamous() {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("py_type", "1"));
+		params.add(new BasicNameValuePair("is_celebrity", "1"));
 		System.out.println("params:\n" + params.toString());
 		return params;
 	}

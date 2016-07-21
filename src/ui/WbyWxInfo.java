@@ -38,10 +38,11 @@ public class WbyWxInfo extends javax.swing.JFrame {
 		et_code = new javax.swing.JTextField();
 		jLabel1 = new javax.swing.JLabel();
 		btn_code = new javax.swing.JButton();
-		btn_start = new javax.swing.JButton();
+		btn_weixin = new javax.swing.JButton();
 		et_page = new javax.swing.JTextField();
 		jLabel2 = new javax.swing.JLabel();
 		lb_result = new javax.swing.JLabel();
+		btn_weibo = new javax.swing.JButton();
 		lb_code = new javax.swing.JLabel();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -57,10 +58,10 @@ public class WbyWxInfo extends javax.swing.JFrame {
 			}
 		});
 
-		btn_start.setText("\u5f00\u59cb");
-		btn_start.addMouseListener(new java.awt.event.MouseAdapter() {
+		btn_weixin.setText("\u5fae\u4fe1\u5f00\u59cb");
+		btn_weixin.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				btn_startMouseClicked(evt);
+				btn_weixinMouseClicked(evt);
 			}
 		});
 
@@ -69,6 +70,13 @@ public class WbyWxInfo extends javax.swing.JFrame {
 		jLabel2.setText("\u8d77\u59cb\u9875:");
 
 		lb_result.setText("  ");
+
+		btn_weibo.setText("\u5fae\u535a\u5f00\u59cb");
+		btn_weibo.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btn_weiboMouseClicked(evt);
+			}
+		});
 
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
 				jPanel1);
@@ -85,14 +93,14 @@ public class WbyWxInfo extends javax.swing.JFrame {
 												jPanel1Layout
 														.createParallelGroup(
 																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(lb_result)
 														.addGroup(
 																jPanel1Layout
 																		.createSequentialGroup()
 																		.addGroup(
 																				jPanel1Layout
 																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
+																								javax.swing.GroupLayout.Alignment.LEADING,
+																								false)
 																						.addGroup(
 																								jPanel1Layout
 																										.createSequentialGroup()
@@ -115,23 +123,36 @@ public class WbyWxInfo extends javax.swing.JFrame {
 																										.createSequentialGroup()
 																										.addComponent(
 																												btn_code)
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																										.addGap(18,
+																												18,
+																												18)
 																										.addComponent(
-																												btn_start)))
+																												lb_code,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												Short.MAX_VALUE)))
+																		.addGap(24,
+																				24,
+																				24)
+																		.addComponent(
+																				et_page,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				javax.swing.GroupLayout.PREFERRED_SIZE))
+														.addGroup(
+																jPanel1Layout
+																		.createSequentialGroup()
+																		.addComponent(
+																				btn_weixin)
 																		.addPreferredGap(
 																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				jPanel1Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								lb_code)
-																						.addComponent(
-																								et_page,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))))
+																		.addComponent(
+																				lb_result)
+																		.addGap(50,
+																				50,
+																				50)
+																		.addComponent(
+																				btn_weibo)))
 										.addContainerGap(
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)));
@@ -153,23 +174,39 @@ public class WbyWxInfo extends javax.swing.JFrame {
 																javax.swing.GroupLayout.PREFERRED_SIZE,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(jLabel2)
 														.addComponent(
 																et_page,
 																javax.swing.GroupLayout.PREFERRED_SIZE,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel2))
-										.addGap(20, 20, 20)
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGap(11, 11, 11)
 										.addGroup(
 												jPanel1Layout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
+																javax.swing.GroupLayout.Alignment.TRAILING)
 														.addComponent(btn_code)
-														.addComponent(btn_start)
-														.addComponent(lb_code))
-										.addGap(18, 18, 18)
-										.addComponent(lb_result)
-										.addContainerGap(30, Short.MAX_VALUE)));
+														.addComponent(
+																lb_code,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																34,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(
+												jPanel1Layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addGroup(
+																jPanel1Layout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.BASELINE)
+																		.addComponent(
+																				lb_result)
+																		.addComponent(
+																				btn_weixin))
+														.addComponent(btn_weibo))
+										.addContainerGap(23, Short.MAX_VALUE)));
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
@@ -189,14 +226,27 @@ public class WbyWxInfo extends javax.swing.JFrame {
 	}// </editor-fold>
 	//GEN-END:initComponents
 
-	private void btn_startMouseClicked(java.awt.event.MouseEvent evt) {
+	private void btn_weiboMouseClicked(java.awt.event.MouseEvent evt) {
+		String code = et_code.getText();
+		if (WbySpider.login(code)) {
+			try {
+				WbySpider.startGetWB();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			;
+		}
+	}
+
+	private void btn_weixinMouseClicked(java.awt.event.MouseEvent evt) {
 
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				String code = et_code.getText();
-//				String page = et_page.getText();
+				//				String page = et_page.getText();
 				if (WbySpider.login(code)) {
 					try {
 						WbySpider.startGetWX();
@@ -240,7 +290,8 @@ public class WbyWxInfo extends javax.swing.JFrame {
 	//GEN-BEGIN:variables
 	// Variables declaration - do not modify
 	private javax.swing.JButton btn_code;
-	private javax.swing.JButton btn_start;
+	private javax.swing.JButton btn_weibo;
+	private javax.swing.JButton btn_weixin;
 	private javax.swing.JTextField et_code;
 	private javax.swing.JTextField et_page;
 	private javax.swing.JLabel jLabel1;

@@ -2,7 +2,7 @@ package entitys;
 
 import com.google.gson.Gson;
 
-public class CwqWXEntity {
+public class CwqWXEntity extends BasicEntity {
 	//bs_account_name,bs_weixinhao,bs_head_img,2016-4-18,141,type,bs_introduction,1,dtwdyt,dtwdet,dtwqtwz
 	
 	/**
@@ -34,6 +34,10 @@ public class CwqWXEntity {
 	 */
 	private String dtwqtwz;
 	
+	private String solt_price2;
+	
+	private String solt_price3;
+	
 	private String bs_fans_num;
 	
 	private String bs_order_note;
@@ -42,6 +46,20 @@ public class CwqWXEntity {
 	
 	private String bs_qr_code;
 	
+	
+	
+	public String getSolt_price2() {
+		return solt_price2;
+	}
+	public void setSolt_price2(String solt_price2) {
+		this.solt_price2 = solt_price2;
+	}
+	public String getSolt_price3() {
+		return solt_price3;
+	}
+	public void setSolt_price3(String solt_price3) {
+		this.solt_price3 = solt_price3;
+	}
 	public String getBs_qr_code() {
 		return bs_qr_code;
 	}

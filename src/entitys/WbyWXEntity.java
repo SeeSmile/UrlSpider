@@ -7,7 +7,7 @@ import com.google.gson.Gson;
  * notice:
  * Created by FuPei on 2016/7/4.
  */
-public class WbyWXEntity {
+public class WbyWXEntity extends BasicEntity {
 
     /**
      * weibo_id : TTXuanPai

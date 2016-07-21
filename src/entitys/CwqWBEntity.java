@@ -2,7 +2,7 @@ package entitys;
 
 import com.google.gson.Gson;
 
-public class CwqWBEntity {
+public class CwqWBEntity extends BasicEntity {
 	/**
 	 * ����
 	 */
@@ -11,8 +11,10 @@ public class CwqWBEntity {
 	private String pg_fans_num_explain;
 	private String bs_weibo_url;
 	private String pg_area_name;
+	private String bs_introduction;
 	private String bs_head_img;
 	private String verified_explain;
+	private int bs_verified;
 	private String sy_fans_num;
 	private String bs_rg_zhuanfa;
 	private String bs_rg_zhifa;
@@ -21,6 +23,15 @@ public class CwqWBEntity {
 	private String bs_create_time;
 	private String bs_update_time;
 	
+	
+	
+	
+	public String getBs_introduction() {
+		return bs_introduction;
+	}
+	public int getBs_verified() {
+		return bs_verified;
+	}
 	public String getBs_yg_zhifa() {
 		return bs_yg_zhifa;
 	}

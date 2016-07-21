@@ -27,9 +27,26 @@ public class WebUtil {
 	public static String sendGET(String url) throws IOException {
         HttpGet httpGet = new HttpGet(url);
         BasicHttpContext context = new BasicHttpContext();
-        httpGet.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+        httpGet.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Linux; Android 5.0.2; vivo X6A Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/37.0.0.0 Mobile MQQBrowser/6.2 TBS/036524 Safari/537.36 MicroMessenger/6.3.22.821 NetType/WIFI Language/zh_CN");
         CloseableHttpResponse httpResponse = null;
 		httpResponse = getClient().execute(httpGet, context);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                httpResponse.getEntity().getContent(), "utf-8"));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = reader.readLine()) != null) {
+            response.append(inputLine);
+        }
+        reader.close();
+        return response.toString();
+    }
+	
+	public static String request(String url) throws Exception {
+        HttpGet httpGet = new HttpGet(url);
+        BasicHttpContext context = new BasicHttpContext();
+        httpGet.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+        CloseableHttpResponse httpResponse = null;
+		httpResponse = new SSLClient().execute(httpGet, context);
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 httpResponse.getEntity().getContent(), "utf-8"));
         String inputLine;

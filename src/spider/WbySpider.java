@@ -2,13 +2,8 @@ package spider;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.print.attribute.standard.Finishings;
-import javax.swing.text.Caret;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -17,15 +12,13 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import com.google.gson.Gson;
-
+import data.Constant;
+import db.SpiderWbDB;
 import db.SpiderWxDB;
-
+import entitys.WbyWBEntity;
 import entitys.WbyWXEntity;
 import entitys.WbyWXEntity2;
-
-import utils.ConfigUtil;
 import utils.SFileUtil;
 import utils.WebUtil;
 
@@ -51,16 +44,15 @@ public class WbySpider extends BaseSpider{
 	 */
 	private static final String URL_TOKEN = "http://chuanbo.weiboyi.com/hworder/weixin";
 	private static final String URL_GET_ALL = "http://chuanbo.weiboyi.com/hworder/weixin/filterlist/source/all?";
-	private static final String[] LIST_AREA = {"382", "500", "326", "317", "322", "317", "320", "320", "332", "323", "444", "316", "318", 
-												"327", "329", "336", "313", "334", "338", "294", "340", "295", "500", "331", "333", "500", 
-												"329", "318", "500", "500"};
+
+	private static final String URL_GET_ALL_WB = "http://chuanbo.weiboyi.com/hworder/sina/filterlist/source/all?";
 	
-	private static String mToken;
+	public static String mToken;
 	
 	public WbySpider() {
 		super(BaseSpider.Type.WBY);
 	}
-
+	
 	/**
 	 * 获取验证码
 	 * @return 验证码文件
@@ -95,7 +87,7 @@ public class WbySpider extends BaseSpider{
 				if(mToken == null) {
 					String token = getToken();
 					setToken(token);
-					ConfigUtil.setToken(token);
+					
 				}
 				return true;
 			} else {
@@ -127,18 +119,21 @@ public class WbySpider extends BaseSpider{
 	 */
 	public static void startGetWX() throws JSONException {
 		SpiderWxDB db = SpiderWxDB.getInstance();
-		for(int category = 3005; category <= 3023; category++) {
+		for(int category = 3001; category <= 3023; category++) {
 			System.out.println("获取第" + category + "种类数据");
 			boolean isComplete = false;
 			int page = 0;
 			while(!isComplete) {
 				StringBuffer buffer = new StringBuffer(URL_GET_ALL);
+				
+				buffer.append("pack_area_id=").append("1012501").append("&");
 				buffer.append("category_filter=").append(category).append("&");
 				buffer.append("limit=").append(PAGE_LIMIT).append("&");
-				buffer.append("price_key[other]=").append("1").append("&");
-				buffer.append("price_key[second]=").append("1").append("&");
-				buffer.append("price_key[single]=").append("1").append("&");
-				buffer.append("price_key[top]=").append("1").append("&");
+				buffer.append("price_keys[other]=").append("1").append("&");
+				buffer.append("price_keys[second]=").append("1").append("&");
+				buffer.append("price_keys[single]=").append("1").append("&");
+				buffer.append("price_keys[top]=").append("1").append("&");
+				buffer.append("price_keys[writing]=").append("1").append("&");
 				buffer.append("start=").append(page * PAGE_LIMIT).append("&");
 				buffer.append("web_csrf_token=").append(mToken);
 				try {
@@ -152,16 +147,20 @@ public class WbySpider extends BaseSpider{
 						System.out.println("获取完毕了，哈哈哈");
 						isComplete = true;
 					}
-					List<Object> list = getEntity(json_data);
+					if(count_all == 0) {
+						continue;
+					}
+					List<Object> list = getWXEntityList(json_data);
 					if(list != null) {
 						System.out.println("size is " + list.size());
 						for(int i = 0; i < list.size(); i++) {
 							if(list.get(i) instanceof WbyWXEntity) {
 								WbyWXEntity entity = (WbyWXEntity) list.get(i);
-								db.insertInfo(entity, LIST_AREA[category - 3001]);
+								System.out.println("entity:\n" + entity.getWeibo_name());
+								db.insertInfo(entity, Constant.LIST_TYPE_ID_WX_WBY[category - 3001]);
 							} else {
 								WbyWXEntity2 entity = (WbyWXEntity2) list.get(i);
-								db.insertInfo(entity, LIST_AREA[category - 3001]);
+								db.insertInfo(entity, Constant.LIST_TYPE_ID_WX_WBY[category - 3001]);
 							}
 						}
 						db.close();
@@ -175,6 +174,7 @@ public class WbySpider extends BaseSpider{
 					try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {
+						
 					}
 					page++;
 				}
@@ -182,7 +182,7 @@ public class WbySpider extends BaseSpider{
 		}
 	}
 	
-	private static List<Object> getEntity(JSONObject json) {
+	private static List<Object> getWXEntityList(JSONObject json) {
 		List<Object> list = new ArrayList<>();
 		try {
 			JSONArray array_rows = json.getJSONArray("rows");
@@ -199,8 +199,81 @@ public class WbySpider extends BaseSpider{
 			return list;
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			return null                                                                                                                                            ;
 		}
 	}
 	
+	public static void startGetWB() throws JSONException {
+		SpiderWbDB db = SpiderWbDB.getInstance();
+		for(int category = 1; category <= Constant.LIST_TYPE_ID_WB_WBY.length; category++) {
+			System.out.println("获取第" + category + "种类数据");
+			boolean isComplete = false;
+			int page = 0;
+			while(!isComplete) {
+				StringBuffer buffer = new StringBuffer(URL_GET_ALL_WB);
+				buffer.append("category_filter=").append(category).append("&");
+				buffer.append("limit=").append(PAGE_LIMIT).append("&");
+				buffer.append("price_keys[reservation]=").append("1").append("&");
+				buffer.append("price_keys[retweet]=").append("1").append("&");
+				buffer.append("price_keys[tweet]=").append("1").append("&");
+				buffer.append("start=").append(page * PAGE_LIMIT).append("&");
+				buffer.append("web_csrf_token=").append(mToken);
+				try {
+					System.out.println("获取第 " + (page + 1) + " 页");
+					System.out.println("wocao start");
+					String result = WebUtil.sendGET(buffer.toString());
+					JSONObject json = new JSONObject(result);
+					JSONObject json_data = json.getJSONObject("data");
+					int count_start = json_data.getInt("start");
+					int count_all = json_data.getInt("total");
+					if(count_all <= count_start + PAGE_LIMIT) {
+						System.out.println("获取完毕了，哈哈哈");
+						isComplete = true;
+					}
+					List<Object> list = getWBEntityList(json_data);
+					if(list != null) {
+						System.out.println("size is " + list.size());
+						for(int i = 0; i < list.size(); i++) {
+							if(list.get(i) instanceof WbyWBEntity) {
+								WbyWBEntity entity = (WbyWBEntity) list.get(i);
+								db.insertInfo(entity, Constant.LIST_TYPE_ID_WB_WBY[category - 1]);
+							}
+						}
+						db.close();
+					} else {
+						System.out.println("list 为空了");
+					}
+				} catch (IOException e) {
+					System.out.println("io exception:" + e.toString());
+					isComplete = true;
+				} catch(Exception e){
+					e.printStackTrace();
+					System.out.println("exception");
+				} finally {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						
+					}
+					page++;
+				}
+			}
+		}
+	}
+
+	private static List<Object> getWBEntityList(JSONObject json) {
+		List<Object> list = new ArrayList<>();
+		try {
+			JSONArray array_rows = json.getJSONArray("rows");
+			Gson gson = new Gson();
+			for(int i = 0; i < array_rows.length(); i++) {
+				WbyWBEntity entity = gson.fromJson(array_rows.getJSONObject(i).getJSONObject("cells").toString(), WbyWBEntity.class);
+				list.add(entity);
+			}
+			return list;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null                                                                                                                                            ;
+		}
+	}
 }

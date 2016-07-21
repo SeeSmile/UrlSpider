@@ -2,7 +2,7 @@ package entitys;
 
 import com.google.gson.Gson;
 
-public class WbyWXEntity2 {
+public class WbyWXEntity2 extends BasicEntity{
 
 	public String face_url;
 	public String url;

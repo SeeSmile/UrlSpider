@@ -1,39 +1,21 @@
 package test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-
-import db.WeiBoDB;
-
-import entitys.WeiBoEntity;
 
 import spider.CwqSpider;
-import spider.WeiBoSpider;
-import sun.security.krb5.Config;
-import utils.ConfigUtil;
-import utils.SFileUtil;
-import utils.SFileUtil.ReadListener;
 import utils.WebUtil;
 
 public class TokenTest {
 
 	public static void main(String[] args) throws Exception {
-		String url = "http://www.cwq.com/Owner/Weibo/getAccountInfo/";
-		CwqSpider sp = new CwqSpider();
-		sp.login();
-		sp.getWbData();
-		
+		String url = "http://www.yunduimedia.com/dmp/rankInfo.do?signal=sogaad&action=select_account_view&_=1468401741357";
+		String result = WebUtil.request(url);
+		System.out.println(result);
+		int p = result.lastIndexOf("\"");
+		String ooo = result.substring(1, p);
+		System.out.println(ooo.replace("\\", ""));
+		JSONObject json = new JSONObject(ooo);
+		System.out.println(json);
 	}
-	
 
-	
 }

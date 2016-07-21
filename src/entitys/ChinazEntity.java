@@ -2,7 +2,7 @@ package entitys;
 
 import com.google.gson.Gson;
 
-public class ChinazEntity {
+public class ChinazEntity extends BasicEntity{
 	
 	private String title;
 	private String image;

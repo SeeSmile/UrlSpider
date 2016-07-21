@@ -133,12 +133,16 @@ public class BaseSqlDB {
 	 * @return 最终存入数据库的价格
 	 */
 	public String getRealPrice(String price) {
-		float real_price = Float.valueOf(price);
-		if(real_price <= 300) {
-			real_price = (float) (real_price * 1.5);
-		} else {
-			real_price = (float) (real_price * 1.35);
+		try{
+			float real_price = Float.valueOf(price);
+			if(real_price <= 300) {
+				real_price = (float) (real_price * 1.5);
+			} else {
+				real_price = (float) (real_price * 1.35);
+			}
+			return real_price + "";
+		} catch(Exception e) {
+			return "0";
 		}
-		return real_price + "";
 	}
 }

@@ -3,7 +3,7 @@ package entitys;
 
 import com.google.gson.Gson;
 
-public class WeiBoEntity {
+public class WeiBoEntity extends BasicEntity{
 
 
 	public String isVip;
