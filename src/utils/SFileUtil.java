@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +13,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SFileUtil {
 	
@@ -66,6 +69,22 @@ public class SFileUtil {
 			buffer.append(line);
 		}
 		return buffer.toString();
+	}
+	
+	public static List<String> readFileToList(File file) throws IOException {
+		List<String> list = new ArrayList<>();
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		fis = new FileInputStream(file);
+		isr = new InputStreamReader(fis, "UTF-8");  
+		BufferedReader br = new BufferedReader(isr);   
+//		StringBuffer buffer = new StringBuffer();
+		String line;
+		while((line = br.readLine()) != null) {
+			list.add(line);
+//			buffer.append(line);
+		}
+		return list;
 	}
 	
 	public interface ReadListener {
@@ -146,4 +165,23 @@ public class SFileUtil {
 		return new File(PATH_CODE + System.currentTimeMillis() + ".jpg");
 	}
 
+	public static void writeText2File(String fileName, String content) {   
+        FileWriter writer = null;  
+        try {     
+           
+            writer = new FileWriter(fileName, true);     
+            writer.write("\r\n");
+            writer.write(content);       
+        } catch (IOException e) {     
+            e.printStackTrace();     
+        } finally {     
+            try {     
+                if(writer != null){  
+                    writer.close();     
+                }  
+            } catch (IOException e) {     
+                e.printStackTrace();     
+            }     
+        }   
+    }    
 }

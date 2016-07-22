@@ -87,7 +87,6 @@ public class WbySpider extends BaseSpider{
 				if(mToken == null) {
 					String token = getToken();
 					setToken(token);
-					
 				}
 				return true;
 			} else {

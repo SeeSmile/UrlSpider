@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -24,7 +26,7 @@ public class WebUtil {
 	public static List<String> LIST_SUID = new ArrayList<>();
 	public static List<String> LIST_SUIR = new ArrayList<>();
 	
-	public static String sendGET(String url) throws IOException {
+	public static synchronized String sendGET(String url) throws IOException {
         HttpGet httpGet = new HttpGet(url);
         BasicHttpContext context = new BasicHttpContext();
         httpGet.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Linux; Android 5.0.2; vivo X6A Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/37.0.0.0 Mobile MQQBrowser/6.2 TBS/036524 Safari/537.36 MicroMessenger/6.3.22.821 NetType/WIFI Language/zh_CN");
@@ -58,7 +60,7 @@ public class WebUtil {
         return response.toString();
     }
  
-    public static synchronized String sendPOST(String url, List<NameValuePair> param) throws Exception {
+    public static synchronized String sendPOST(String url, List<NameValuePair> param) throws ClientProtocolException, IOException {
         HttpPost httpPost = new HttpPost(url);
         httpPost.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
         if(param != null) {
